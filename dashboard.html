@@ -445,7 +445,7 @@ console.log('Tasks after filter:', tasks.length);
 tasks.sort((a,b)=>new Date(a.deadline)-new Date(b.deadline));
 document.getElementById('tasksList').innerHTML=tasks.length?tasks.map(x=>renderTask(x,isSPV)).join(''):'<div class="empty-state">Tidak ada</div>';
 }
-else if(isSPV){
+  }else if(isSPV){
   // SPV sees all
   tasks=tasks.filter(x=>String(x.storeId)!=='9999');
 }
