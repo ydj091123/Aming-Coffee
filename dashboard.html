@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="theme-color" content="#3D2B1F">
+<title>Aming Coffee</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --brown:#6F4E37;--brown-dark:#3D2B1F;--brown-light:#D4A574;
+  --red:#C0392B;--green:#27AE60;--blue:#2980B9;--orange:#E67E22;
+  --bg:#F2EDE8;--card:#fff;--text:#2C1810;--muted:#8B7355;
+  --border:#E8DDD0;--radius:12px;--shadow:0 2px 8px rgba(0,0,0,.08);
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* HEADER */
+.header{background:linear-gradient(135deg,var(--brown-dark),var(--brown));color:#fff;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.2)}
+.header-left{display:flex;align-items:center;gap:10px}
+.logo{width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.3)}
+.header-info h1{font-size:14px;font-weight:700;line-height:1.2}
+.header-info p{font-size:11px;opacity:.8}
+.badge-role{background:rgba(255,255,255,.2);padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;letter-spacing:.5px}
+.btn-logout{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px}
+
+/* TABS */
+.tabs{display:flex;background:var(--brown-dark);overflow-x:auto;scrollbar-width:none;padding:0 4px}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;padding:10px 16px;color:rgba(255,255,255,.6);border:none;background:none;cursor:pointer;font-size:12px;font-weight:600;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap}
+.tab.active{color:#fff;border-bottom-color:var(--brown-light)}
+
+/* CONTAINER */
+.container{padding:12px;max-width:800px;margin:0 auto}
+.view{display:none}.view.active{display:block}
+
+/* CARDS */
+.card{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.card-title{font-size:15px;font-weight:700;color:var(--brown-dark)}
+.card-subtitle{font-size:11px;color:var(--muted);margin-top:2px}
+
+/* STAT GRID */
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.stat-box{background:var(--bg);border-radius:10px;padding:10px;text-align:center}
+.stat-box .val{font-size:22px;font-weight:800;line-height:1}
+.stat-box .lbl{font-size:10px;color:var(--muted);margin-top:3px}
+.stat-box.blue .val{color:var(--blue)}
+.stat-box.green .val{color:var(--green)}
+.stat-box.orange .val{color:var(--orange)}
+.stat-box.red .val{color:var(--red)}
+
+/* ITEMS */
+.item{background:var(--bg);border-radius:10px;padding:12px;margin-bottom:8px;border-left:4px solid var(--brown-light);position:relative}
+.item.urgent{border-left-color:var(--red)}
+.item.done{border-left-color:var(--green);opacity:.7}
+.item.pending{border-left-color:var(--orange)}
+.item.approved{border-left-color:var(--green)}
+.item.rejected{border-left-color:var(--red)}
+.item-title{font-size:13px;font-weight:700;margin-bottom:4px}
+.item-meta{font-size:11px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.item-actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700}
+.badge-brown{background:var(--brown);color:#fff}
+.badge-red{background:var(--red);color:#fff}
+.badge-green{background:var(--green);color:#fff}
+.badge-orange{background:var(--orange);color:#fff}
+.badge-blue{background:var(--blue);color:#fff}
+.badge-gray{background:#95a5a6;color:#fff}
+
+/* BUTTONS */
+.btn{border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:5px}
+.btn-primary{background:var(--brown);color:#fff}
+.btn-success{background:var(--green);color:#fff}
+.btn-danger{background:var(--red);color:#fff}
+.btn-warning{background:var(--orange);color:#fff}
+.btn-sm{padding:5px 10px;font-size:11px}
+.btn-full{width:100%;justify-content:center;padding:12px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* FORM */
+.form-group{margin-bottom:12px}
+.form-group label{display:block;font-size:12px;font-weight:600;color:var(--brown);margin-bottom:4px}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;background:#fff;color:var(--text)}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--brown)}
+.form-group textarea{resize:vertical;min-height:70px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+/* MODAL */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;align-items:flex-end;justify-content:center}
+.modal.active{display:flex}
+.modal-box{background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;padding:20px;animation:slideUp .25s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 16px}
+.modal-title{font-size:16px;font-weight:700;color:var(--brown-dark);margin-bottom:16px}
+
+/* FILTERS */
+.filters{display:flex;gap:8px;margin-bottom:12px;overflow-x:auto;padding-bottom:4px}
+.filters select,.filters input{flex:1;min-width:120px;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;background:#fff}
+
+/* LOADING / EMPTY */
+.loading-state{text-align:center;padding:32px;color:var(--muted);font-size:13px}
+.empty-state{text-align:center;padding:32px;color:var(--muted)}
+.empty-state .icon{font-size:36px;margin-bottom:8px}
+.empty-state p{font-size:13px}
+
+/* INFO BANNER */
+.info-banner{background:linear-gradient(135deg,var(--brown),var(--brown-dark));color:#fff;border-radius:var(--radius);padding:14px 16px;margin-bottom:12px;display:flex;align-items:center;gap:12px}
+.info-banner .icon{font-size:28px;flex-shrink:0}
+.info-banner h3{font-size:14px;font-weight:700}
+.info-banner p{font-size:12px;opacity:.85;margin-top:2px}
+
+/* ANNOUNCEMENT */
+.ann-item{border-radius:10px;padding:12px;margin-bottom:8px;border-left:4px solid var(--brown)}
+.ann-item.urgent{background:#FEF0EF;border-left-color:var(--red)}
+.ann-item.normal{background:#FFFBF5;border-left-color:var(--orange)}
+.ann-item.info{background:#F0F7FF;border-left-color:var(--blue)}
+
+/* HISTORY */
+.history-item{background:var(--bg);border-radius:10px;padding:12px;margin-bottom:8px;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}
+.history-date{text-align:center;background:var(--brown);color:#fff;border-radius:8px;padding:6px 10px;min-width:44px}
+.history-date .day{font-size:18px;font-weight:800;line-height:1}
+.history-date .month{font-size:9px;opacity:.85}
+.history-times{display:flex;gap:8px;margin-top:4px}
+.time-badge{font-size:11px;background:#fff;padding:2px 8px;border-radius:20px;color:var(--text)}
+
+/* SPV SUMMARY GRID */
+.summary-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}
+.summary-box{background:var(--card);border-radius:12px;padding:14px 12px;text-align:center;cursor:pointer;box-shadow:var(--shadow);transition:transform .15s;border-top:3px solid transparent}
+.summary-box:active{transform:scale(.97)}
+.summary-box.orange{border-top-color:var(--orange)}
+.summary-box.red{border-top-color:var(--red)}
+.summary-box.blue{border-top-color:var(--blue)}
+.summary-box.green{border-top-color:var(--green)}
+.s-val{font-size:28px;font-weight:800;line-height:1;color:var(--brown-dark)}
+.s-lbl{font-size:11px;color:var(--muted);margin-top:4px;font-weight:600}
+@media(min-width:480px){.summary-grid{grid-template-columns:repeat(4,1fr)}}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:#2C1810;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:999;transition:transform .3s;white-space:nowrap;max-width:90vw;overflow:hidden;text-overflow:ellipsis}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+@media(min-width:600px){.stat-grid{grid-template-columns:repeat(4,1fr)}}
+@media(min-width:700px){
+  .modal-box{border-radius:16px;margin:auto;max-height:85vh}
+  .modal{align-items:center}
+  .container{padding:16px}
+  .card{padding:20px}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAyADIDASIAAhEBAxEB/8QAGwAAAwADAQEAAAAAAAAAAAAAAAUGAwQHAQL/xAA7EAABAwMDAAYDDgcAAAAAAAABAgMEAAUREiExBhQiQVFhE3GRIyQyMzRDUlNzgZOhscEHFUJUYuHw/8QAGAEBAQEBAQAAAAAAAAAAAAAABAUDAAb/xAAjEQACAgEDBAMBAAAAAAAAAAABAgADEQQSITEzQVETInHB/9oADAMBAAIRAxEAPwDuEaJDTAaWuOwAGkkkoSANqSzbiy4oohRmG2/rVNJJV6gRsPX7K9uU0uMMQkH3NDaC7/kcAgeoc/eKXVM1erKnYkXRQCNzRTfpLEGEJDsZp91x1DKC63qSFK4JABOPIDJOAOaW2i5xHLn1CRFZRKU0XW9EIsKUArBAG+cZByFHvzim9zusCFHUJDqVlSFKS02salADJxvtxz+9TVrjRukURwF59mSpOQ407pcZzuNGnZOx3xvqyFA5oakldzZ/YggA4Euod0bacCFtsvp+rdbCVgeRIH5+2qeKi3zGA8ywyUnYgtgEHwIxsa5PamZIuP8ALYmF25uOkvSnnCp0OhW+nwKufojG2atoM0wZYdzhpWzo8vH7v0zSqNUyMEc5BmNlIYblHM15saOJ0gCOz8ar5sePqorLN+XyPtVfqaKqwUVybozCs6rpLUUtBsOrUATgED2DjfupcmbPv9tWLdoiNqUUdcWSQsA7qaTgEg9yjinENBRAYbUN0tJQQfIYNfUiQiO0t1xR7IzgDKj6gNzXnGb7HI5zKoHA9SakdDYt7tqo90kuuKW4FB5kBpfZOBuNiMDgg4yTud6nhHYtSbXBt01xNzYUG0Og+lccyo6xpVkAYISdhkjyroNsktSITK216gkBKsgghQ+ECDvzXKP4Xzo0vpNdJKmApanXVtrKt2UFRJUrOwzkJGNzk9wressVYnoPEzcAEY8zovRi2yLbGnCZKVKlOzXFreWrKlDACQfDA7htTwgEEHg81rRZDD7kj0DrbgS5hWhQOFaRkHwNbNGYknJmyjA4k7J6UOx5TzJAJbWpBJ78HFFLJ1nlP3CS8hB0uOqUNu4kmiravdtHEnFa8y/nRVMONOAe5voSpOPpaRkfv7ag7hcujq7mFzb1GAbkbZQpLgWOAHAfgjONh99deTGamWtpl0ZSW0kEHBBwMEedR87o1Eg6w9bYi2VZHpUsJwQfHbsnf/dF1OnKMbF6H1EUWqw2tJCHcrBEl9YVdo/vbW4AtBU8QSU5KsnUPDbPFN3ZfRyA4llTcRpQSjZEcbAjUOB4DV5Dc1ik2lUyMll6x2xxvsklDujJGNgQnIGwHO4Fbao0l5SnV2u3B7WkhSla9gMA50g5HA8jQiQef6IgYiu2XmwQZcxxp1EdEtbasYAGQFIHBJ3CCok8AjNU9uWi8tR1Q1lTckZQvSR2e9WD/wBxWjabAwtoMt2yKp4YSoIGtCQlOhPaVx2dj37nmrm1Wpm1xwlIR6QpAJSnASBwlI7gKRTp/lbcRxMrbVQYHWT0o+jlvIQAEpcUAMcDNFeTfl8n7VX6mirMnTHGmy+qte+nvgJ+cPhWTrsvPyp78Q0UV06THSaS/HeBZecbJG5QojPspXZ50t+YhL0p9xOeFuEj86KKl2d6NXty861IbwhD7qUgbBKyAK867L/unvxDRRVSCkzKmSuuP++XvjFf1nxooorp0//Z" class="logo" alt="AC">
+    <div class="header-info">
+      <h1 id="userName">Loading...</h1>
+      <p id="userStore"></p>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <span class="badge-role" id="userRole"></span>
+    <button class="btn-logout" onclick="logout()">Keluar</button>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs" id="mainTabs">
+  <button class="tab active" onclick="switchView('info')" id="tabInfo">📢 Info</button>
+  <button class="tab" onclick="switchView('tugas')" id="tabTugas">✅ Tugas</button>
+  <button class="tab" onclick="switchView('history')" id="tabHistory">📅 History</button>
+  
+</div>
+
+<!-- VIEWS -->
+<div class="container">
+
+  <!-- INFO VIEW -->
+  <div id="infoView" class="view active">
+
+    <!-- SPV SUMMARY (only SPV sees this) -->
+    <div id="spvSummary" style="display:none">
+      <div class="summary-grid" id="summaryGrid">
+        <div class="summary-box orange" onclick="switchView('tugas')">
+          <div class="s-val" id="sTugasAktif">—</div>
+          <div class="s-lbl">Tugas Aktif</div>
+        </div>
+        <div class="summary-box blue">
+          <div class="s-val" id="sTotalStores">—</div>
+          <div class="s-lbl">Toko</div>
+        </div>
+        <div class="summary-box green">
+          <div class="s-val" id="sHadirHariIni">—</div>
+          <div class="s-lbl">Hadir Hari Ini</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- URGENT BANNER -->
+    <div id="infoBanner"></div>
+
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">📢 Pengumuman</div>
+          <div class="card-subtitle" id="annSubtitle"></div>
+        </div>
+        <button class="btn btn-primary btn-sm" id="btnCreateAnn" onclick="openCreateAnn()" style="display:none">+ Buat</button>
+      </div>
+      <div id="annList"><div class="loading-state">⏳ Memuat...</div></div>
+    </div>
+  </div>
+
+  <!-- TUGAS VIEW -->
+  <div id="tugasView" class="view">
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">✅ Tugas</div>
+          <div class="card-subtitle" id="tugasSubtitle"></div>
+        </div>
+        <button class="btn btn-primary btn-sm" id="btnCreateTask" onclick="openCreateTask()" style="display:none">+ Buat</button>
+      </div>
+      <div class="filters">
+        <select id="filterTaskStatus" onchange="loadTasks()">
+          <option value="active">Aktif</option>
+          <option value="completed">Selesai</option>
+          <option value="all">Semua</option>
+        </select>
+        <select id="filterTaskStore" onchange="loadTasks()" style="display:none">
+          <option value="all">Semua Toko</option>
+        </select>
+      </div>
+      <div id="tasksList"><div class="loading-state">⏳ Memuat...</div></div>
+    </div>
+  </div>
+
+  <!-- HISTORY VIEW -->
+  <div id="historyView" class="view">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">📅 Riwayat Absensi</div>
+      </div>
+      <div class="filters">
+        <select id="filterHistoryPeriod" onchange="loadHistory()">
+          <option value="today">Hari Ini</option>
+          <option value="week">7 Hari</option>
+          <option value="month" selected>Bulan Ini</option>
+          <option value="all">Semua</option>
+        </select>
+        <select id="filterHistoryStore" onchange="loadHistory()" style="display:none">
+          <option value="all">Semua Toko</option>
+        </select>
+      </div>
+      <div id="historyList"><div class="loading-state">⏳ Memuat...</div></div>
+    </div>
+  </div>
+
+  </div><!-- end container -->
+
+<!-- MODAL: CREATE TASK -->
+<div class="modal" id="taskModal">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title">✅ Buat Tugas Baru</div>
+    <form onsubmit="return submitTask(event)">
+      <div class="form-group" id="taskStoreGroup" style="display:none">
+        <label>Toko (SPV)</label>
+        <select id="taskStore" onchange="onTaskStoreChange()">
+          <option value="">-- Pilih Toko --</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Ditugaskan Kepada</label>
+        <select id="taskAssignee" required>
+          <option value="">-- Pilih Staff --</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Judul Tugas</label>
+        <input type="text" id="taskTitle" required placeholder="Contoh: Bersihkan area kasir">
+      </div>
+      <div class="form-group">
+        <label>Deskripsi</label>
+        <textarea id="taskDesc" placeholder="Detail tugas (opsional)"></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Deadline</label>
+          <input type="date" id="taskDeadline" required>
+        </div>
+        <div class="form-group">
+          <label>Prioritas</label>
+          <select id="taskPriority">
+            <option value="normal">Normal</option>
+            <option value="urgent">Urgent</option>
+            <option value="low">Low</option>
+          </select>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-full">Buat Tugas</button>
+      <button type="button" class="btn btn-full" style="background:var(--bg);margin-top:8px" onclick="closeModal('taskModal')">Batal</button>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL: COMPLETE TASK -->
+<div class="modal" id="completeModal">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title">📸 Selesaikan Tugas</div>
+    <div id="completeTaskInfo" style="background:var(--bg);border-radius:10px;padding:12px;margin-bottom:16px;font-size:13px"></div>
+    <div class="form-group">
+      <label>Catatan Penyelesaian (opsional)</label>
+      <textarea id="completeNotes" placeholder="Tambahkan catatan..."></textarea>
+    </div>
+    <button class="btn btn-success btn-full" onclick="submitComplete()">✅ Tandai Selesai</button>
+    <button type="button" class="btn btn-full" style="background:var(--bg);margin-top:8px" onclick="closeModal('completeModal')">Batal</button>
+  </div>
+</div>
+
+<!-- MODAL: CREATE ANNOUNCEMENT -->
+<div class="modal" id="annModal">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title">📢 Buat Pengumuman</div>
+    <form onsubmit="return submitAnn(event)">
+      <div class="form-group">
+        <label>Judul</label>
+        <input type="text" id="annTitle" required placeholder="Judul pengumuman">
+      </div>
+      <div class="form-group">
+        <label>Isi Pengumuman</label>
+        <textarea id="annContent" required placeholder="Tulis isi pengumuman..."></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Prioritas</label>
+          <select id="annPriority">
+            <option value="normal">Normal</option>
+            <option value="urgent">🔴 Urgent</option>
+            <option value="info">Info</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Target Toko</label>
+          <select id="annTarget" onchange="toggleAnnStore()">
+            <option value="all">Semua Toko</option>
+            <option value="specific">Toko Tertentu</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group" id="annStoreGroup" style="display:none">
+        <label>Pilih Toko</label>
+        <select id="annStore"></select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Berlaku Dari</label>
+          <input type="date" id="annStart" required>
+        </div>
+        <div class="form-group">
+          <label>Berlaku Hingga</label>
+          <input type="date" id="annEnd" required>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-full">Buat Pengumuman</button>
+      <button type="button" class="btn btn-full" style="background:var(--bg);margin-top:8px" onclick="closeModal('annModal')">Batal</button>
+    </form>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ╔══════════════════════════════════════════════════════════════╗
+// ║  STEP 1: GANTI URL INI dengan URL deployment Apps Script Anda ║
+// ║  Cara dapat URL:                                              ║
+// ║  Apps Script → Deploy → Manage deployments → Copy URL        ║
+// ║  Pastikan URL diakhiri dengan /exec                          ║
+// ╚══════════════════════════════════════════════════════════════╝
+const API = 'https://script.google.com/macros/s/AKfycbxNpS2LuNEAwLtTo1KPCxsdabYHvrKzOkTVqNiOCjQqSJsy_xHOLuoOmbBu0jW_b-7K/exec';
+// Contoh: const API = 'https://script.google.com/macros/s/AKfycbxxx.../exec';
+
+// ─── STATE ───────────────────────────────────────────────────
+const user = JSON.parse(localStorage.getItem('acUser') || 'null');
+const isSPV = user && (user.role === 'Admin' || user.storeId === '9999');
+const isManager = user && (user.role === 'Manager' || user.role === 'Shift Leader' || user.role === 'Admin' || isSPV);
+let currentCompleteId = null;
+let allStores = [];
+
+// ─── GUARD ───────────────────────────────────────────────────
+if (API.includes('GANTI_DENGAN')) {
+  document.body.innerHTML = `
+    <div style="font-family:sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;background:#F2EDE8;padding:20px">
+      <div style="background:#fff;border-radius:16px;padding:32px;max-width:480px;width:100%;box-shadow:0 4px 20px rgba(0,0,0,.1);text-align:center">
+        <div style="font-size:48px;margin-bottom:16px">⚙️</div>
+        <h2 style="color:#3D2B1F;margin-bottom:12px">Setup Diperlukan</h2>
+        <p style="color:#8B7355;font-size:14px;line-height:1.6;margin-bottom:20px">
+          File ini belum dikonfigurasi.<br>
+          Buka <strong>dashboard.html</strong> dengan teks editor,<br>
+          cari baris <code style="background:#F2EDE8;padding:2px 6px;border-radius:4px">const API =</code><br>
+          dan ganti dengan URL deployment Apps Script Anda.
+        </p>
+        <div style="background:#F2EDE8;border-radius:8px;padding:12px;font-size:12px;color:#6F4E37;text-align:left;word-break:break-all">
+          const API = 'https://script.google.com/macros/s/<strong>ID_ANDA</strong>/exec';
+        </div>
+      </div>
+    </div>`;
+  throw new Error('API not configured');
+}
+if (!user) { location.href = 'index.html'; }
+
+// ─── HEADER ──────────────────────────────────────────────────
+document.getElementById('userName').textContent = user.name;
+document.getElementById('userStore').textContent = user.storeName || '';
+document.getElementById('userRole').textContent = user.role;
+
+// ─── PERMISSIONS ─────────────────────────────────────────────
+if (isSPV || user.role === 'Manager' || user.role === 'Shift Leader') {
+  document.getElementById('btnCreateTask').style.display = 'inline-flex';
+}
+if (isSPV) {
+  document.getElementById('btnCreateAnn').style.display = 'inline-flex';
+  document.getElementById('filterTaskStore').style.display = 'block';
+  document.getElementById('filterHistoryStore').style.display = 'block';
+}
+
+// ─── API ─────────────────────────────────────────────────────
+const cache = {};
+async function api(action, sheet, data) {
+  const key = action + sheet + JSON.stringify(data || {});
+  if (action === 'read' && cache[key] && Date.now() - cache[key].ts < 30000) return cache[key].val;
+  try {
+    if (action === 'read') {
+      const r = await fetch(`${API}?action=${action}&sheet=${sheet}`);
+      const j = await r.json();
+      cache[key] = { val: j, ts: Date.now() };
+      return j;
+    } else {
+      const r = await fetch(API, { method: 'POST', body: JSON.stringify({ action, sheet, data }) });
+      Object.keys(cache).filter(k => k.includes(sheet)).forEach(k => delete cache[k]);
+      return await r.json();
+    }
+  } catch (e) { return { success: false, error: e.message }; }
+}
+
+// ─── UTILS ───────────────────────────────────────────────────
+function toast(msg, dur = 2500) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), dur);
+}
+function fmtDate(d) {
+  if (!d) return '-';
+  return new Date(d).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+function fmtTime(t) {
+  if (!t) return '-';
+  return String(t).substring(0, 5);
+}
+function dayStr(d) {
+  return new Date(d).toLocaleDateString('id-ID', { day: '2-digit' });
+}
+function monStr(d) {
+  return new Date(d).toLocaleDateString('id-ID', { month: 'short' }).toUpperCase();
+}
+
+// ─── NAVIGATION ──────────────────────────────────────────────
+function switchView(v) {
+  document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+  const view = document.getElementById(v + 'View');
+  const tab = document.getElementById('tab' + v.charAt(0).toUpperCase() + v.slice(1));
+  if (view) view.classList.add('active');
+  if (tab) tab.classList.add('active');
+  if (v === 'info') loadAnnouncements();
+  if (v === 'tugas') loadTasks();
+  if (v === 'history') loadHistory();
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('active');
+}
+function logout() {
+  localStorage.removeItem('acUser');
+  location.href = 'index.html';
+}
+
+// ─── ANNOUNCEMENTS ───────────────────────────────────────────
+async function loadAnnouncements() {
+  document.getElementById('annList').innerHTML = '<div class="loading-state">⏳ Memuat...</div>';
+  try {
+    const res = await fetch(API, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'getActiveAnnouncements', storeId: user.storeId })
+    });
+    const r = await res.json();
+    const data = r.data || [];
+    document.getElementById('annSubtitle').textContent = data.length + ' pengumuman aktif';
+
+    if (!data.length) {
+      document.getElementById('annList').innerHTML = '<div class="empty-state"><div class="icon">📭</div><p>Belum ada pengumuman</p></div>';
+      return;
+    }
+
+    // Show urgent banner
+    const urgent = data.filter(a => a.priority === 'urgent');
+    if (urgent.length) {
+      document.getElementById('infoBanner').innerHTML = `<div class="info-banner"><div class="icon">🚨</div><div><h3>${urgent[0].title}</h3><p>${urgent[0].content.substring(0,80)}${urgent[0].content.length>80?'...':''}</p></div></div>`;
+    }
+
+    document.getElementById('annList').innerHTML = data.map(a => `
+      <div class="ann-item ${a.priority}">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+          <div style="font-size:13px;font-weight:700">${a.title}</div>
+          <span class="badge ${a.priority==='urgent'?'badge-red':a.priority==='normal'?'badge-orange':'badge-blue'}">${a.priority==='urgent'?'🔴 PENTING':a.priority==='normal'?'NORMAL':'INFO'}</span>
+        </div>
+        <div style="font-size:12px;color:var(--text);line-height:1.5;margin-bottom:6px">${a.content}</div>
+        <div style="font-size:10px;color:var(--muted)">📅 ${fmtDate(a.createdAt)} · ${a.createdBy} · ${a.targetStore || 'Semua Toko'}</div>
+      </div>`).join('');
+  } catch (e) {
+    document.getElementById('annList').innerHTML = '<div class="empty-state"><p>Gagal memuat data</p></div>';
+  }
+}
+
+async function openCreateAnn() {
+  const r = await api('read', 'Stores');
+  if (r.success) {
+    document.getElementById('annStore').innerHTML = (r.data || [])
+      .filter(s => s.id !== '9999')
+      .map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+  }
+  const today = new Date().toISOString().split('T')[0];
+  const nextWeek = new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0];
+  document.getElementById('annStart').value = today;
+  document.getElementById('annEnd').value = nextWeek;
+  document.getElementById('annModal').classList.add('active');
+}
+
+function toggleAnnStore() {
+  document.getElementById('annStoreGroup').style.display =
+    document.getElementById('annTarget').value === 'specific' ? 'block' : 'none';
+}
+
+async function submitAnn(e) {
+  e.preventDefault();
+  const target = document.getElementById('annTarget').value;
+  let targetStoreId = 'all', targetStore = 'Semua Toko';
+  if (target === 'specific') {
+    targetStoreId = document.getElementById('annStore').value;
+    const r = await api('read', 'Stores');
+    const s = (r.data || []).find(s => s.id === targetStoreId);
+    targetStore = s ? s.name : '';
+  }
+  const r = await api('write', 'Announcements', {
+    id: Date.now().toString(),
+    title: document.getElementById('annTitle').value,
+    content: document.getElementById('annContent').value,
+    priority: document.getElementById('annPriority').value,
+    targetStore, targetStoreId,
+    createdBy: user.name,
+    startDate: document.getElementById('annStart').value,
+    endDate: document.getElementById('annEnd').value,
+    showPopup: document.getElementById('annPriority').value === 'urgent' ? 'true' : 'false',
+    status: 'active',
+    createdAt: new Date().toISOString()
+  });
+  if (r.success) { toast('✅ Pengumuman dibuat!'); closeModal('annModal'); loadAnnouncements(); }
+  else toast('❌ ' + r.error);
+  return false;
+}
+
+// ─── TASKS ───────────────────────────────────────────────────
+async function loadTasks() {
+  document.getElementById('tasksList').innerHTML = '<div class="loading-state">⏳ Memuat...</div>';
+  const r = await api('read', 'Tasks');
+  if (!r.success) { document.getElementById('tasksList').innerHTML = '<div class="empty-state"><p>Gagal memuat</p></div>'; return; }
+
+  let tasks = r.data || [];
+  const statusFilter = document.getElementById('filterTaskStatus').value;
+  const storeFilter = isSPV ? document.getElementById('filterTaskStore').value : null;
+
+  // Filter by store
+  if (isSPV && storeFilter && storeFilter !== 'all') {
+    tasks = tasks.filter(t => String(t.storeId) === String(storeFilter));
+  } else if (!isSPV) {
+    if (user.role === 'Manager') {
+      tasks = tasks.filter(t => String(t.storeId) === String(user.storeId));
+    } else {
+      tasks = tasks.filter(t => String(t.assignee || '').toLowerCase() === String(user.name || '').toLowerCase());
+    }
+  }
+
+  // Filter by status
+  if (statusFilter === 'active') tasks = tasks.filter(t => t.status !== 'completed');
+  else if (statusFilter === 'completed') tasks = tasks.filter(t => t.status === 'completed');
+
+  document.getElementById('tugasSubtitle').textContent = tasks.length + ' tugas';
+
+  if (!tasks.length) {
+    document.getElementById('tasksList').innerHTML = '<div class="empty-state"><div class="icon">✅</div><p>Tidak ada tugas</p></div>';
+    return;
+  }
+
+  const canComplete = (t) => isSPV || user.role === 'Manager' ||
+    String(t.assignee || '').toLowerCase() === String(user.name || '').toLowerCase();
+
+  document.getElementById('tasksList').innerHTML = tasks.map(t => `
+    <div class="item ${t.status === 'completed' ? 'done' : t.priority === 'urgent' ? 'urgent' : ''}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+        <div>
+          <div class="item-title">${t.title}</div>
+          <div class="item-meta">
+            <span>👤 ${t.assignee || '-'}</span>
+            <span>📅 ${fmtDate(t.deadline)}</span>
+            <span class="badge ${t.priority === 'urgent' ? 'badge-red' : 'badge-gray'}">${t.priority || 'normal'}</span>
+          </div>
+          ${t.description ? `<div style="font-size:11px;color:var(--muted);margin-top:4px">${t.description}</div>` : ''}
+        </div>
+        <span class="badge ${t.status === 'completed' ? 'badge-green' : 'badge-orange'}">${t.status === 'completed' ? '✅ Selesai' : '⏳ Aktif'}</span>
+      </div>
+      ${t.status !== 'completed' && canComplete(t) ? `
+      <div class="item-actions">
+        <button class="btn btn-success btn-sm" onclick="openComplete('${t.id}','${t.title.replace(/'/g,"\\'")}')">✅ Selesaikan</button>
+      </div>` : ''}
+      ${t.status === 'completed' && t.completedBy ? `<div style="font-size:10px;color:var(--green);margin-top:6px">✅ Selesai oleh ${t.completedBy} • ${fmtDate(t.completedAt)}</div>` : ''}
+    </div>`).join('');
+}
+
+async function openCreateTask() {
+  // Load stores if SPV
+  if (isSPV) {
+    const r = await api('read', 'Stores');
+    if (r.success) {
+      allStores = (r.data || []).filter(s => s.id !== '9999');
+      document.getElementById('taskStore').innerHTML =
+        '<option value="">-- Pilih Toko --</option>' +
+        allStores.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+    }
+    document.getElementById('taskStoreGroup').style.display = 'block';
+  } else {
+    document.getElementById('taskStoreGroup').style.display = 'none';
+    document.getElementById('taskStore').value = user.storeId;
+    await loadAssignees(user.storeId);
+  }
+  // Set default deadline to tomorrow
+  const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+  document.getElementById('taskDeadline').value = tomorrow;
+  document.getElementById('taskModal').classList.add('active');
+}
+
+async function onTaskStoreChange() {
+  const storeId = document.getElementById('taskStore').value;
+  if (storeId) await loadAssignees(storeId);
+}
+
+async function loadAssignees(storeId) {
+  const r = await api('read', 'Users');
+  if (!r.success) return;
+  const users = (r.data || []).filter(u => String(u.storeId) === String(storeId));
+  document.getElementById('taskAssignee').innerHTML =
+    '<option value="">-- Pilih Staff --</option>' +
+    users.map(u => `<option value="${u.name}">${u.name} (${u.role})</option>`).join('');
+}
+
+async function submitTask(e) {
+  e.preventDefault();
+  const storeId = document.getElementById('taskStore').value || user.storeId;
+  const storeName = allStores.find(s => s.id === storeId)?.name || user.storeName;
+  const r = await api('write', 'Tasks', {
+    id: Date.now().toString(),
+    storeId, storeName,
+    assignee: document.getElementById('taskAssignee').value,
+    title: document.getElementById('taskTitle').value,
+    description: document.getElementById('taskDesc').value,
+    deadline: document.getElementById('taskDeadline').value,
+    priority: document.getElementById('taskPriority').value,
+    status: 'active',
+    createdBy: user.name,
+    createdAt: new Date().toISOString()
+  });
+  if (r.success) { toast('✅ Tugas berhasil dibuat!'); closeModal('taskModal'); document.querySelector('#taskModal form').reset(); loadTasks(); }
+  else toast('❌ ' + r.error);
+  return false;
+}
+
+function openComplete(id, title) {
+  currentCompleteId = id;
+  document.getElementById('completeTaskInfo').innerHTML = `<strong>${title}</strong>`;
+  document.getElementById('completeNotes').value = '';
+  document.getElementById('completeModal').classList.add('active');
+}
+
+async function submitComplete() {
+  if (!currentCompleteId) return;
+  const r = await api('update', 'Tasks', {
+    id: currentCompleteId,
+    status: 'completed',
+    completedBy: user.name,
+    completedAt: new Date().toISOString(),
+    notes: document.getElementById('completeNotes').value
+  });
+  if (r.success) { toast('✅ Tugas diselesaikan!'); closeModal('completeModal'); loadTasks(); }
+  else toast('❌ ' + r.error);
+}
+
+// ─── HISTORY ─────────────────────────────────────────────────
+async function loadHistory() {
+  document.getElementById('historyList').innerHTML = '<div class="loading-state">⏳ Memuat...</div>';
+  const r = await api('read', 'Attendance');
+  if (!r.success) { document.getElementById('historyList').innerHTML = '<div class="empty-state"><p>Gagal memuat</p></div>'; return; }
+
+  let data = r.data || [];
+  const period = document.getElementById('filterHistoryPeriod').value;
+  const storeFilter = isSPV ? document.getElementById('filterHistoryStore').value : null;
+  const today = new Date().toISOString().split('T')[0];
+
+  // Store filter
+  if (isSPV && storeFilter && storeFilter !== 'all') {
+    data = data.filter(d => String(d.storeId) === String(storeFilter));
+  } else if (!isSPV) {
+    data = data.filter(d => String(d.storeId) === String(user.storeId));
+  }
+
+  // Period filter
+  if (period === 'today') {
+    data = data.filter(d => String(d.date).split('T')[0] === today);
+  } else if (period === 'week') {
+    const wk = new Date(Date.now() - 7 * 86400000).toISOString().split('T')[0];
+    data = data.filter(d => String(d.date).split('T')[0] >= wk);
+  } else if (period === 'month') {
+    const mo = new Date(Date.now() - 30 * 86400000).toISOString().split('T')[0];
+    data = data.filter(d => String(d.date).split('T')[0] >= mo);
+  }
+
+  data.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  if (!data.length) {
+    document.getElementById('historyList').innerHTML = '<div class="empty-state"><div class="icon">📭</div><p>Tidak ada riwayat</p></div>';
+    return;
+  }
+
+  document.getElementById('historyList').innerHTML = data.map(d => `
+    <div class="history-item">
+      <div class="history-date">
+        <div class="day">${dayStr(d.date)}</div>
+        <div class="month">${monStr(d.date)}</div>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:700">${d.userName || '-'}</div>
+        <div class="history-times">
+          <span class="time-badge">🟢 ${fmtTime(d.clockIn)}</span>
+          <span class="time-badge">${d.clockOut ? '🔴 ' + fmtTime(d.clockOut) : '⏳ Belum'}</span>
+        </div>
+        ${d.workHours ? `<div style="font-size:10px;color:var(--muted);margin-top:3px">⏱️ ${d.workHours}</div>` : ''}
+      </div>
+      <span class="badge ${d.status === 'completed' ? 'badge-green' : 'badge-orange'}">${d.status === 'completed' ? 'Selesai' : 'Aktif'}</span>
+    </div>`).join('');
+}
+
+// ─── ORDERS ──────────────────────────────────────────────────
+
+// ─── SPV SUMMARY ─────────────────────────────────────────────
+async function loadSPVSummary() {
+  if (!isSPV) return;
+  document.getElementById('spvSummary').style.display = 'block';
+
+  // Load all in parallel
+  const [rTasks, rStores, rAttendance] = await Promise.all([
+    api('read', 'Tasks'),
+    api('read', 'Stores'),
+    api('read', 'Attendance')
+  ]);
+
+  const today = new Date().toISOString().split('T')[0];
+
+  const tugasAktif = rTasks.success
+    ? (rTasks.data || []).filter(t => t.status !== 'completed').length : '?';
+
+  const totalStores = rStores.success
+    ? (rStores.data || []).filter(s => s.id !== '9999').length : '?';
+
+  const hadirHariIni = rAttendance.success
+    ? (rAttendance.data || []).filter(a => String(a.date).split('T')[0] === today).length : '?';
+
+  document.getElementById('sTugasAktif').textContent = tugasAktif;
+  document.getElementById('sTotalStores').textContent = totalStores;
+  document.getElementById('sHadirHariIni').textContent = hadirHariIni;
+}
+
+// ─── INIT ─────────────────────────────────────────────────────
+async function init() {
+  if (isSPV) {
+    const r = await api('read', 'Stores');
+    if (r.success) {
+      const opts = (r.data || []).filter(s => s.id !== '9999').map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+      document.getElementById('filterTaskStore').innerHTML = '<option value="all">Semua Toko</option>' + opts;
+      document.getElementById('filterHistoryStore').innerHTML = '<option value="all">Semua Toko</option>' + opts;
+    }
+    loadSPVSummary();
+  }
+  loadAnnouncements();
+}
+
+init();
+</script>
+</body>
+</html>
